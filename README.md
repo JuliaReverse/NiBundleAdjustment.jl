@@ -22,50 +22,78 @@ $ julia ~/.julia/dev/NiBundleAdjustment/benchmarks/benchmark.jl
 
 You will see results like:
 ```julia repl
-Normal Objective
-BenchmarkTools.Trial: 
+Reversible Objective
+BenchmarkTools.Trial:
   memory estimate:  0 bytes
   allocs estimate:  0
   --------------
-  minimum time:     60.111 ns (0.00% GC)
-  median time:      60.332 ns (0.00% GC)
-  mean time:        61.376 ns (0.00% GC)
-  maximum time:     162.091 ns (0.00% GC)
+  minimum time:     86.765 ns (0.00% GC)
+  median time:      108.700 ns (0.00% GC)
+  mean time:        105.818 ns (0.00% GC)
+  maximum time:     593.374 ns (0.00% GC)
   --------------
   samples:          10000
-  evals/sample:     982
-Reversible Objective
-BenchmarkTools.Trial: 
-  memory estimate:  144 bytes
-  allocs estimate:  3
-  --------------
-  minimum time:     151.439 ns (0.00% GC)
-  median time:      152.798 ns (0.00% GC)
-  mean time:        171.360 ns (6.59% GC)
-  maximum time:     5.764 μs (96.40% GC)
-  --------------
-  samples:          10000
-  evals/sample:     818
+  evals/sample:     961
+
 NiLang Gradient
-BenchmarkTools.Trial: 
-  memory estimate:  332.28 MiB
-  allocs estimate:  6543109
+BenchmarkTools.Trial:
+  memory estimate:  48.36 MiB
+  allocs estimate:  5
   --------------
-  minimum time:     278.000 ms (7.06% GC)
-  median time:      391.476 ms (24.87% GC)
-  mean time:        394.913 ms (25.61% GC)
-  maximum time:     488.938 ms (28.86% GC)
+  minimum time:     166.250 ms (0.00% GC)
+  median time:      169.854 ms (0.63% GC)
+  mean time:        179.859 ms (6.97% GC)
+  maximum time:     310.742 ms (46.30% GC)
   --------------
-  samples:          13
-  evals/sample:     1ForwardDiff Gradient
-BenchmarkTools.Trial: 
+  samples:          28
+  evals/sample:     1
+Normal Objective
+BenchmarkTools.Trial:
+  memory estimate:  0 bytes
+  allocs estimate:  0
+  --------------
+  minimum time:     59.942 ns (0.00% GC)
+  median time:      60.138 ns (0.00% GC)
+  mean time:        65.153 ns (0.00% GC)
+  maximum time:     199.957 ns (0.00% GC)
+  --------------
+  samples:          10000
+  evals/sample:     988
+
+Reversible Objective
+BenchmarkTools.Trial:
+  memory estimate:  0 bytes
+  allocs estimate:  0
+  --------------
+  minimum time:     107.617 ns (0.00% GC)
+  median time:      108.738 ns (0.00% GC)
+  mean time:        110.055 ns (0.00% GC)
+  maximum time:     236.161 ns (0.00% GC)
+  --------------
+  samples:          10000
+  evals/sample:     932
+
+NiLang Gradient
+BenchmarkTools.Trial:
+  memory estimate:  48.36 MiB
+  allocs estimate:  5
+  --------------
+  minimum time:     167.203 ms (0.00% GC)
+  median time:      187.738 ms (0.49% GC)
+  mean time:        200.598 ms (7.51% GC)
+  maximum time:     366.429 ms (43.97% GC)
+  --------------
+  samples:          25
+  evals/sample:     1
+ForwardDiff Gradient
+BenchmarkTools.Trial:
   memory estimate:  528.84 MiB
   allocs estimate:  4907333
   --------------
-  minimum time:     591.759 ms (6.08% GC)
-  median time:      901.409 ms (16.11% GC)
-  mean time:        882.480 ms (17.03% GC)
-  maximum time:     1.141 s (27.03% GC)
+  minimum time:     646.650 ms (6.45% GC)
+  median time:      878.898 ms (18.77% GC)
+  mean time:        905.952 ms (21.36% GC)
+  maximum time:     1.388 s (32.71% GC)
   --------------
   samples:          6
   evals/sample:     1

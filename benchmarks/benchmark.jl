@@ -17,8 +17,8 @@ display(@benchmark compute_reproj_err($(vec2scam(cams[:,1])), $(X[:,1]), $(w[1])
 
 println()
 println("Reversible Objective")
-display(@benchmark compute_reproj_err($(MVector(0.0, 0.0)), $(MVector(0.0, 0.0)),
-    $(vec2cam(cams[:,1])), $(X[:,1]), $(w[1]), $(feats[:,1])))
+display(@benchmark compute_reproj_err($(P2(0.0, 0.0)), $(P2(0.0, 0.0)),
+    $(vec2cam(cams[:,1])), $(P3(X[:,1]...)), $(w[1]), $(P2(feats[:,1]...))))
 println()
 println("NiLang Gradient")
 display(@benchmark compute_ba_J(Val(:NiLang), $CAMS, $X, $w, $obs, $feats))

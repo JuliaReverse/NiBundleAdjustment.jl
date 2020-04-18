@@ -1,7 +1,7 @@
 using NiBundleAdjustment
 using NiBundleAdjustment: icross!, vec2cam, compute_reproj_err,
-    project, rand_camera, mzeros
-using NiLang
+    project, rand_camera, P2, P3
+using NiLang, NiLang.AD
 using LinearAlgebra, StaticArrays
 using Test
 
@@ -32,16 +32,27 @@ end
 
 @testset "project" begin
     cam = rand_camera()
-    X = MVector{3}(randn(3))
-    @test project(mzeros(2), cam, X)[1] ≈ project(cam, X)
-    @test check_inv(project,(mzeros(2), cam, X))
+    scam = Camera(SVector(cam.r), SVector(cam.c), cam.f, SVector(cam.x0), SVector(cam.κ))
+    X = P3(randn(3)...)
+    @test SVector(project(zero(P2{Float64}), cam, X)[1]) ≈ project(scam, SVector(X))
+    @test check_inv(project,(zero(P2{Float64}), cam, X))
 
     w = randn()
     feat = MVector{2}(randn(2))
     cam = rand_camera()
+    scam = Camera(SVector(cam.r), SVector(cam.c), cam.f, SVector(cam.x0), SVector(cam.κ))
     X = MVector{3}(randn(3))
-    compute_reproj_err(mzeros(2), mzeros(2), cam, X, w, feat)[1]
-    res = compute_reproj_err(zero(cam.x0), zero(cam.x0), cam, X, w, feat)[1]
-    @test compute_reproj_err(cam, X, w, feat) ≈ res
-    @test check_inv(compute_reproj_err, (zero(cam.x0), zero(cam.x0), cam, X, w, feat))
+    res = compute_reproj_err(zero(cam.x0), zero(cam.x0), cam, P3(X...), w, P2(feat...))[1]
+
+    @test compute_reproj_err(scam, X, w, feat) ≈ SVector(res)
+    @test check_inv(compute_reproj_err, (zero(cam.x0), zero(cam.x0), cam, P3(X...), w, P2(feat...)))
+end
+
+@testset "P2, P3" begin
+    p = P2(2.0, 4.0)
+    @test (~GVar)(GVar(p)) == p
+    @test GVar(P2(2.0, 3.0), P2(1.0, 0.5)) == P2(GVar(2.0, 1.0), GVar(3.0, 0.5))
+    p = P3(2.0, 4.0, 8.0)
+    @test (~GVar)(GVar(p)) == p
+    @test GVar(P3(2.0, 3.0, 4.0), P3(1.0, 0.5, 0.25)) == P3(GVar(2.0, 1.0), GVar(3.0, 0.5), GVar(4.0, 0.25))
 end
