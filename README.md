@@ -12,7 +12,7 @@ The motivation is to beat the benchmark in this [paper](https://arxiv.org/abs/18
 Open a Julia REPL and type `]` to enter `pkg` mode and then type
 ```julia pkg
 pkg> dev git@github.com:JuliaReverse/NiBundleAdjustment.jl.git
-pkg> add ForwardDiff BenchmarkTools
+pkg> add ForwardDiff BenchmarkTools StaticArrays
 ```
 
 Then in a bash shell, type the following commands to open the benchmark file in Atom.
@@ -22,84 +22,58 @@ $ julia ~/.julia/dev/NiBundleAdjustment/benchmarks/benchmark.jl
 
 You will see results like:
 ```julia repl
-Reversible Objective
-BenchmarkTools.Trial:
-  memory estimate:  0 bytes
-  allocs estimate:  0
-  --------------
-  minimum time:     86.765 ns (0.00% GC)
-  median time:      108.700 ns (0.00% GC)
-  mean time:        105.818 ns (0.00% GC)
-  maximum time:     593.374 ns (0.00% GC)
-  --------------
-  samples:          10000
-  evals/sample:     961
-
-NiLang Gradient
-BenchmarkTools.Trial:
-  memory estimate:  48.36 MiB
-  allocs estimate:  5
-  --------------
-  minimum time:     166.250 ms (0.00% GC)
-  median time:      169.854 ms (0.63% GC)
-  mean time:        179.859 ms (6.97% GC)
-  maximum time:     310.742 ms (46.30% GC)
-  --------------
-  samples:          28
-  evals/sample:     1
 Normal Objective
-BenchmarkTools.Trial:
-  memory estimate:  0 bytes
-  allocs estimate:  0
+BenchmarkTools.Trial: 
+  memory estimate:  4.43 MiB
+  allocs estimate:  69121
   --------------
-  minimum time:     59.942 ns (0.00% GC)
-  median time:      60.138 ns (0.00% GC)
-  mean time:        65.153 ns (0.00% GC)
-  maximum time:     199.957 ns (0.00% GC)
+  minimum time:     5.799 ms (0.00% GC)
+  median time:      5.849 ms (0.00% GC)
+  mean time:        6.063 ms (2.97% GC)
+  maximum time:     12.997 ms (50.32% GC)
   --------------
-  samples:          10000
-  evals/sample:     988
-
+  samples:          825
+  evals/sample:     1
 Reversible Objective
-BenchmarkTools.Trial:
-  memory estimate:  0 bytes
-  allocs estimate:  0
+BenchmarkTools.Trial: 
+  memory estimate:  6.91 MiB
+  allocs estimate:  80334
   --------------
-  minimum time:     107.617 ns (0.00% GC)
-  median time:      108.738 ns (0.00% GC)
-  mean time:        110.055 ns (0.00% GC)
-  maximum time:     236.161 ns (0.00% GC)
+  minimum time:     29.817 ms (0.00% GC)
+  median time:      30.005 ms (0.00% GC)
+  mean time:        30.473 ms (1.29% GC)
+  maximum time:     33.439 ms (8.34% GC)
   --------------
-  samples:          10000
-  evals/sample:     932
-
+  samples:          165
+  evals/sample:     1
 NiLang Gradient
-BenchmarkTools.Trial:
-  memory estimate:  48.36 MiB
-  allocs estimate:  5
+BenchmarkTools.Trial: 
+  memory estimate:  19.04 MiB
+  allocs estimate:  160662
   --------------
-  minimum time:     167.203 ms (0.00% GC)
-  median time:      187.738 ms (0.49% GC)
-  mean time:        200.598 ms (7.51% GC)
-  maximum time:     366.429 ms (43.97% GC)
+  minimum time:     79.517 ms (0.00% GC)
+  median time:      80.665 ms (0.00% GC)
+  mean time:        81.452 ms (1.28% GC)
+  maximum time:     91.425 ms (9.19% GC)
   --------------
-  samples:          25
+  samples:          62
   evals/sample:     1
 ForwardDiff Gradient
-BenchmarkTools.Trial:
-  memory estimate:  528.84 MiB
-  allocs estimate:  4907333
+nparams = 330
+BenchmarkTools.Trial: 
+  memory estimate:  659.90 MiB
+  allocs estimate:  1935756
   --------------
-  minimum time:     646.650 ms (6.45% GC)
-  median time:      878.898 ms (18.77% GC)
-  mean time:        905.952 ms (21.36% GC)
-  maximum time:     1.388 s (32.71% GC)
+  minimum time:     1.086 s (2.56% GC)
+  median time:      1.087 s (2.57% GC)
+  mean time:        1.091 s (2.57% GC)
+  maximum time:     1.110 s (2.62% GC)
   --------------
-  samples:          6
+  samples:          5
   evals/sample:     1
 ```
 
-Note: the memory usage is not yet fully optimized. We can still trade some space for time.
+Note: CPU: Intel(R) Xeon(R) Gold 6230 CPU @ 2.10GHz.
 
 It corresponds to the second column of ADBench paper
 ![ADBench](benchmarks/adbench.png)
