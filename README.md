@@ -104,5 +104,5 @@ Note: the memory usage is not yet fully optimized. We can still trade some space
 It corresponds to the second column of ADBench paper
 ![ADBench](benchmarks/adbench.png)
 
-We see our ForwardDiff result is 16x faster than the original version.
+We see our ForwardDiff result is 16x faster than the original version, it still has some room for optimization as can be seen from the allocations in our benchmark.
 NiLang is even faster. Here the Jacobian is computed by glueing the Jacobians of a function with 15 input parameters and 2 output parameters. This is why NiLang does not have much advantage comparing with forward mode AD.
