@@ -22,31 +22,6 @@ $ julia ~/.julia/dev/NiBundleAdjustment/benchmarks/benchmark.jl
 
 You will see results like:
 ```julia repl
-Reversible Objective
-BenchmarkTools.Trial:
-  memory estimate:  0 bytes
-  allocs estimate:  0
-  --------------
-  minimum time:     86.765 ns (0.00% GC)
-  median time:      108.700 ns (0.00% GC)
-  mean time:        105.818 ns (0.00% GC)
-  maximum time:     593.374 ns (0.00% GC)
-  --------------
-  samples:          10000
-  evals/sample:     961
-
-NiLang Gradient
-BenchmarkTools.Trial:
-  memory estimate:  48.36 MiB
-  allocs estimate:  5
-  --------------
-  minimum time:     166.250 ms (0.00% GC)
-  median time:      169.854 ms (0.63% GC)
-  mean time:        179.859 ms (6.97% GC)
-  maximum time:     310.742 ms (46.30% GC)
-  --------------
-  samples:          28
-  evals/sample:     1
 Normal Objective
 BenchmarkTools.Trial:
   memory estimate:  0 bytes
@@ -72,19 +47,7 @@ BenchmarkTools.Trial:
   --------------
   samples:          10000
   evals/sample:     932
-
-NiLang Gradient
-BenchmarkTools.Trial:
-  memory estimate:  48.36 MiB
-  allocs estimate:  5
-  --------------
-  minimum time:     167.203 ms (0.00% GC)
-  median time:      187.738 ms (0.49% GC)
-  mean time:        200.598 ms (7.51% GC)
-  maximum time:     366.429 ms (43.97% GC)
-  --------------
-  samples:          25
-  evals/sample:     1
+  
 ForwardDiff Gradient
 BenchmarkTools.Trial:
   memory estimate:  528.84 MiB
@@ -96,6 +59,19 @@ BenchmarkTools.Trial:
   maximum time:     1.388 s (32.71% GC)
   --------------
   samples:          6
+  evals/sample:     1
+  
+NiLang Gradient
+BenchmarkTools.Trial:
+  memory estimate:  48.36 MiB
+  allocs estimate:  5
+  --------------
+  minimum time:     167.203 ms (0.00% GC)
+  median time:      187.738 ms (0.49% GC)
+  mean time:        200.598 ms (7.51% GC)
+  maximum time:     366.429 ms (43.97% GC)
+  --------------
+  samples:          25
   evals/sample:     1
 ```
 
