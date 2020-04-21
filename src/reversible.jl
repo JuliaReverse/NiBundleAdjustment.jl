@@ -222,7 +222,7 @@ end
     out! -= w ^ 2
 end
 
-function compute_ba_J(::Val{:NiLang}, cams::AbstractArray{<:Camera{T}}, X, w, obs, feats) where T
+function compute_ba_J(::Val{:NiLang}, cams::AbstractArray{<:Camera{T}}, X::AbstractArray{<:P3}, w, obs, feats::AbstractArray{<:P2}) where T
     p = size(obs,2)
     reproj_err_d = zeros(2*p, 15)
     for i in 1:p
@@ -232,7 +232,7 @@ function compute_ba_J(::Val{:NiLang}, cams::AbstractArray{<:Camera{T}}, X, w, ob
         cam = cams[j]
         out! = zero(cam.x0)
         diff = zero(cam.x0)
-        res = compute_reproj_err(out!, diff, cam, P3(X[1,l], X[2,l], X[3,l]), w[i], P2(feats[1,i], feats[2,i]))
+        res = compute_reproj_err(out!, diff, cam, X[l], w[i], feats[i])
         _, _, gcam, gX, gw, _ = (~compute_reproj_err)(P2(GVar(res[1].x, 1.0), GVar(res[1].y, 0.0)),
                         GVar(res[2]), GVar(res[3]), GVar(res[4]), GVar(res[5]), GVar(res[6]))
         packgrad!(reproj_err_d, idx, gcam, gX, gw)

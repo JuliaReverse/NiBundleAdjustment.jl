@@ -22,8 +22,10 @@ end
 
 @testset "check grad" begin
     cams, X, w, obs, feats = load(4, 372, 47423, 204472)
+    XX = [P3(X[:,i]...) for i=1:size(X, 2)]
+    FEATS = [P2(feats[:,i]...) for i=1:size(feats, 2)]
     CAMS = [vec2cam(cams[:,i]) for i = 1:size(cams,2)]
-    j1, j2 = compute_ba_J(Val(:NiLang), CAMS, X, w, obs, feats)
+    j1, j2 = compute_ba_J(Val(:NiLang), CAMS, XX, w, obs, FEATS)
     @test j1[1] ≈ -461.44632100159936
     j1_, j2_ = compute_ba_J(Val(:ForwardDiff), cams, X, w, obs, feats)
     @test j1 ≈ j1_
