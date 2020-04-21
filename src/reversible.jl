@@ -267,6 +267,16 @@ end
     end
 end
 
+@i function ba_objective!(reproj_err!, w_err!, reproj_err_cache!, cams, X, w, obs, feats)
+    for i in 1:length(feats)
+        compute_reproj_err(reproj_err![i], reproj_err_cache![i], cams[obs[1,i]], X[obs[2,i]], w[i], feats[i])
+    end
+    @inbounds for i=1:length(w_err!)
+        w_err![i] += identity(1.0)
+        w_err![i] -= w[i] ^ 2
+    end
+end
+
 #=
 @i @inline function rodrigues_rotate_point(out!::AbstractVector{T}, rot::AbstractVector{T}, X::AbstractVector{T}, wX::T, sqtheta::T, w_cross_X::AbstractVector{T}, w::AbstractVector{T}) where T
     idot(sqtheta, rot, rot)

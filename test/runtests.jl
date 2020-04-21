@@ -58,3 +58,21 @@ end
     @test (~GVar)(GVar(p)) == p
     @test GVar(P3(2.0, 3.0, 4.0), P3(1.0, 0.5, 0.25)) == P3(GVar(2.0, 1.0), GVar(3.0, 0.5), GVar(4.0, 0.25))
 end
+
+@testset "objectives" begin
+    cams, X, w, obs, feats = load(4, 372, 47423, 204472)
+    XX = [P3(X[:,i]...) for i=1:size(X, 2)]
+    FEATS = [P2(feats[:,i]...) for i=1:size(feats, 2)]
+    SCAMS = [NiBundleAdjustment.vec2scam(cams[:,i]) for i = 1:size(cams,2)]
+    CAMS = [vec2cam(cams[:,i]) for i = 1:size(cams,2)]
+    reproj_err! = zeros(P2{Float64}, size(feats, 2))
+    w_err! = zero(w)
+    reproj_err_cache! = zeros(P2{Float64}, size(feats, 2))
+    NiBundleAdjustment.ba_objective!(reproj_err!, w_err!, reproj_err_cache!, CAMS, XX, w, obs, FEATS)
+    reproj_err, w_err = NiBundleAdjustment.ba_objective(SCAMS, X, w, obs, feats)
+    for j=1:size(feats, 2)
+        @test reproj_err[1,j] ≈ reproj_err![j].x
+        @test reproj_err[2,j] ≈ reproj_err![j].y
+    end
+    @test w_err ≈ w_err!
+end

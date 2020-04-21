@@ -74,3 +74,14 @@ function compute_ba_J(::Val{:ForwardDiff}, cams::AbstractArray{T},X,w,obs,feats)
     end
     (reproj_err_d, w_err_d)
 end
+
+
+function ba_objective(cams, X, w, obs, feats)
+    reproj_err = similar(feats)
+    for i in 1:size(feats,2)
+        @inbounds l = obs[2,i]
+        @inbounds reproj_err[:,i] .= compute_reproj_err(cams[obs[1,i]],SVector(X[1,l], X[2,l], X[3,l]),w[i],SVector(feats[1,i], feats[2,i]))
+    end
+    w_err = 1.0 .- w .* w
+    (reproj_err, w_err)
+end

@@ -12,16 +12,22 @@ end
 
 cams, X, w, obs, feats = load(4, 372, 47423, 204472)
 CAMS = [vec2cam(cams[:,i]) for i = 1:size(cams,2)]
+XX = [P3(X[:,i]...) for i=1:size(X, 2)]
+FEATS = [P2(feats[:,i]...) for i=1:size(feats, 2)]
 println("Normal Objective")
-display(@benchmark compute_reproj_err($(vec2scam(cams[:,1])), $(X[:,1]), $(w[1]), $(feats[:,1])))
+SCAMS = [NiBundleAdjustment.vec2scam(cams[:,i]) for i = 1:size(cams,2)]
+display(@benchmark NiBundleAdjustment.ba_objective($SCAMS, $X, $w, $obs, $feats))
 
 println()
 println("Reversible Objective")
-display(@benchmark compute_reproj_err($(P2(0.0, 0.0)), $(P2(0.0, 0.0)),
-    $(vec2cam(cams[:,1])), $(P3(X[:,1]...)), $(w[1]), $(P2(feats[:,1]...))))
-println()
-println("NiLang Gradient")
-display(@benchmark compute_ba_J(Val(:NiLang), $CAMS, $X, $w, $obs, $feats))
+reproj_err! = zeros(P2{Float64}, size(feats, 2))
+w_err! = zero(w)
+reproj_err_cache! = zeros(P2{Float64}, size(feats, 2))
+display(@benchmark NiBundleAdjustment.ba_objective!($reproj_err!, $w_err!, $reproj_err_cache!, $CAMS, $XX, $w, $obs, $FEATS))
 
 println("ForwardDiff Gradient")
 display(@benchmark compute_ba_J(Val(:ForwardDiff), $cams, $X, $w, $obs, $feats))
+
+println()
+println("NiLang Gradient")
+display(@benchmark compute_ba_J(Val(:NiLang), $CAMS, $XX, $w, $obs, $FEATS))
