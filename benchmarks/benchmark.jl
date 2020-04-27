@@ -31,3 +31,11 @@ display(@benchmark compute_ba_J(Val(:ForwardDiff), $cams, $X, $w, $obs, $feats))
 println()
 println("NiLang Gradient")
 display(@benchmark compute_ba_J(Val(:NiLang), $CAMS, $XX, $w, $obs, $FEATS))
+
+using KernelAbstractions
+using CuArrays
+println()
+println("NiLang-CUDA Gradient")
+display(@benchmark compute_ba_J_multithread(Val(:NiLang), $CAMS, $XX, $w, $obs, $FEATS))
+display(@benchmark compute_ba_J_cuda(Val(:NiLang), $(CuArray(CAMS)), $(CuArray(XX)), $(CuArray(w)), $(CuArray(obs)), $(CuArray(FEATS))))
+println()

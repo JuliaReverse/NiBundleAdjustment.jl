@@ -70,9 +70,11 @@ end
     reproj_err_cache! = zeros(P2{Float64}, size(feats, 2))
     NiBundleAdjustment.ba_objective!(reproj_err!, w_err!, reproj_err_cache!, CAMS, XX, w, obs, FEATS)
     reproj_err, w_err = NiBundleAdjustment.ba_objective(SCAMS, X, w, obs, feats)
+    correct = true
     for j=1:size(feats, 2)
-        @test reproj_err[1,j] ≈ reproj_err![j].x
-        @test reproj_err[2,j] ≈ reproj_err![j].y
+        correct = correct && reproj_err[1,j] ≈ reproj_err![j].x
+        correct = correct && reproj_err[2,j] ≈ reproj_err![j].y
     end
+    @test correct
     @test w_err ≈ w_err!
 end

@@ -4,6 +4,7 @@ using NiLang, NiLang.AD
 using LinearAlgebra
 using ForwardDiff
 using StaticArrays
+using Requires
 
 export compute_ba_J, Camera, read_ba_instance
 
@@ -18,5 +19,9 @@ end
 include("forwarddiff.jl")
 include("reversible.jl")
 include("load.jl")
+
+function __init__()
+    @require KernelAbstractions="63c18a36-062a-441e-b654-da1e3ab1ce7c" include("cuda.jl")
+end
 
 end # module
