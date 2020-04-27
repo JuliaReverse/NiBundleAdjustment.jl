@@ -11,7 +11,7 @@ function load(b, n, m, p)
     NiBundleAdjustment.read_ba_instance(string(fn_in,".txt"))
 end
 
-@testset "multi-threading and cuda" begin
+@testset "multi-threading" begin
     cams, X, w, obs, feats = load(4, 372, 47423, 204472)
     CAMS = [vec2cam(cams[:,i]) for i = 1:size(cams,2)]
     XX = [P3(X[:,i]...) for i=1:size(X, 2)]
@@ -23,7 +23,7 @@ end
     @test res1[2] ≈ res2[2]
 end
 
-@testset "multi-threading and cuda" begin
+@testset "cuda" begin
     cams, X, w, obs, feats = load(4, 372, 47423, 204472)
     CAMS = [vec2cam(cams[:,i]) for i = 1:size(cams,2)]
     XX = [P3(X[:,i]...) for i=1:size(X, 2)]
