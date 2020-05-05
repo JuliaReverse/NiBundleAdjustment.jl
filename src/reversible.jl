@@ -242,7 +242,7 @@ function compute_ba_J(::Val{:NiLang}, cams::AbstractArray{<:Camera{T}}, X::Abstr
     end
     w_err_d = zeros(1,p)
     for i in 1:p
-        @inbounds w_err_d[i] = grad(compute_w_err'(Val(1), 0.0, w[i])[3])
+        @inbounds w_err_d[i] = grad(Grad(compute_w_err)(Val(1), 0.0, w[i])[3])
     end
     (reproj_err_d, w_err_d)
 end

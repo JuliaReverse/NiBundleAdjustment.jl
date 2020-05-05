@@ -25,7 +25,7 @@ end
 
 @kernel function ba_kernel_w(w_err_d, w)
     i = @index(Global)
-    @inbounds w_err_d[i] = grad(NiBundleAdjustment.compute_w_err'(Val(1), 0.0, w[i])[3])
+    @inbounds w_err_d[i] = grad(Grad(NiBundleAdjustment.compute_w_err)(Val(1), 0.0, w[i])[3])
 end
 
 function compute_ba_J_multithread(::Val{:NiLang}, cams::AbstractArray{<:Camera{T}}, X::AbstractArray{<:P3}, w, obs, feats::AbstractArray{<:P2}; nthread=4) where T
