@@ -1,3 +1,4 @@
+import NiLang: i_dot, i_norm2, i_axpy!
 abstract type Point{T,N} end
 export P2, P3
 
@@ -37,42 +38,29 @@ NiLang.AD.GVar(cam::Camera) = Camera(GVar(cam.r), GVar(cam.c), GVar(cam.f), GVar
 
 ##################### objective #############################
 
-@i @inline function idot(out!, x, y)
-    @safe @assert length(x) == length(y)
-    @invcheckoff @inbounds for i=1:length(x)
-        out! += x[i] * y[i]
-    end
-end
-
-@i @inline function idot(out!, x::P2, y::P2)
+@i @inline function i_dot(out!, x::P2, y::P2)
     out! += x.x * y.x
     out! += x.y * y.y
 end
 
-@i @inline function idot(out!, x::P3, y::P3)
+@i @inline function i_dot(out!, x::P3, y::P3)
     out! += x.x * y.x
     out! += x.y * y.y
     out! += x.z * y.z
 end
 
-@i @inline function inorm2(out!, x)
-    @invcheckoff @inbounds for i=1:length(x)
-        out! += abs2(x[i])
-    end
-end
-
-@i @inline function inorm2(out!, x::P2)
+@i @inline function i_norm2(out!, x::P2)
     out! += abs2(x.x)
     out! += abs2(x.y)
 end
 
-@i @inline function inorm2(out!, x::P3)
+@i @inline function i_norm2(out!, x::P3)
     out! += abs2(x.x)
     out! += abs2(x.y)
     out! += abs2(x.z)
 end
 
-@i @inline function icross!(out!, x, y)
+@i @inline function i_cross!(out!, x, y)
     @inbounds begin
         out![1] += x[2] * y[3]
         out![1] -= x[3] * y[2]
@@ -83,7 +71,7 @@ end
     end
 end
 
-@i @inline function icross!(out!, x::P3, y::P3)
+@i @inline function i_cross!(out!, x::P3, y::P3)
     @inbounds begin
         out!.x += x.y * y.z
         out!.x -= x.z * y.y
@@ -94,19 +82,12 @@ end
     end
 end
 
-@i @inline function iaxpy!(a, X, Y)
-    @safe @assert length(X) == length(Y)
-    @invcheckoff @inbounds for i=1:length(Y)
-        Y[i] += a * X[i]
-    end
-end
-
-@i @inline function iaxpy!(a, X::P2, Y::P2)
+@i @inline function i_axpy!(a, X::P2, Y::P2)
     Y.x += a * X.x
     Y.y += a * X.y
 end
 
-@i @inline function iaxpy!(a, X::P3, Y::P3)
+@i @inline function i_axpy!(a, X::P3, Y::P3)
     Y.x += a * X.x
     Y.y += a * X.y
     Y.z += a * X.z
@@ -114,57 +95,48 @@ end
 
 @i @inline function rodrigues_rotate_point(out!::P3{T}, rot::P3{T}, X::P3{T}) where T
     @invcheckoff sqtheta ← zero(T)
-    inorm2(sqtheta, rot)
+    i_norm2(sqtheta, rot)
     @invcheckoff if (sqtheta > 1e-10, ~)
         @routine begin
-            tmp1 ← zero(T)
-            tmp2 ← zero(T)
-            wX ← zero(T)
-            w ← zero(out!)
-            w_cross_X ← zero(out!)
-            invtheta ← zero(sqtheta)
-            s ← zero(T)
-            c ← zero(T)
-            theta ← zero(T)
+            @zeros T tmp1 tmp2 wX s c theta invtheta
+            @zeros P3{T} w w_cross_X
             theta += sqtheta ^ 0.5
             (s, c) += sincos(theta)
             tmp1 += 1 - c
             invtheta += 1 / theta
-            iaxpy!(invtheta, rot, w)
-            icross!(w_cross_X, w, X)
-            idot(wX, w, X)
+            i_axpy!(invtheta, rot, w)
+            i_cross!(w_cross_X, w, X)
+            i_dot(wX, w, X)
             tmp2 += wX * tmp1
         end
-        iaxpy!(c, X, out!)
-        iaxpy!(s, w_cross_X, out!)
-        iaxpy!(tmp2, w, out!)
+        i_axpy!(c, X, out!)
+        i_axpy!(s, w_cross_X, out!)
+        i_axpy!(tmp2, w, out!)
         ~@routine
     else
-        icross!(w_cross_X, rot, X)
+        i_cross!(w_cross_X, rot, X)
         out! += X + w_cross_X
     end
-    (~inorm2)(sqtheta, rot)
+    (~i_norm2)(sqtheta, rot)
     @invcheckoff sqtheta → zero(T)
 end
 
 @i @inline function radial_distort(out!::P2{T}, rad_params::P2{T}, proj::P2{T}) where T
     @routine @invcheckoff begin
-        rsq ← zero(T)
-        L ← zero(T)
-        inorm2(rsq, proj)
-        rsqsq ← zero(T)
+        @zeros T rsq L rsqsq
+        i_norm2(rsq, proj)
         rsqsq += rsq ^ 2
         @inbounds L += rad_params.y * rsqsq
         @inbounds L += rad_params.x * rsq
-        L += identity(1)
+        L += 1
     end
-    iaxpy!(L, proj, out!)
+    i_axpy!(L, proj, out!)
     ~@routine
 end
 
 @i @inline function ⊕(identity)(x::P2, y::P2)
-    x.x += identity(y.x)
-    x.y += identity(y.y)
+    x.x += y.x
+    x.y += y.y
 end
 
 @i @inline function ⊕(+)(x::P2, y::P2, z::P2)
@@ -178,9 +150,9 @@ end
 end
 
 @i @inline function ⊕(identity)(x::P3, y::P3)
-    x.x += identity(y.x)
-    x.y += identity(y.y)
-    x.z += identity(y.z)
+    x.x += y.x
+    x.y += y.y
+    x.z += y.z
 end
 
 @i @inline function ⊕(+)(x::P3, y::P3, z::P3)
@@ -200,25 +172,25 @@ end
         Xcam ← zero(cam.r)
         Xcam2 ← zero(cam.x0)
         distorted ← zero(cam.x0)
-        X -= identity(cam.c)
+        X -= cam.c
         rodrigues_rotate_point(Xcam, cam.r, X)
         Xcam2.x += Xcam.x / Xcam.z
         Xcam2.y += Xcam.y / Xcam.z
         radial_distort(distorted, cam.κ, Xcam2)
     end
-    iaxpy!(cam.f, distorted, out!)
-    out! += identity(cam.x0)
+    i_axpy!(cam.f, distorted, out!)
+    out! += cam.x0
     ~@routine
 end
 
 @i function compute_reproj_err(out!, diff, cam, X, w, feat)
     project(diff, cam, X)
-    diff -= identity(feat)
-    iaxpy!(w, diff, out!)
+    diff -= feat
+    i_axpy!(w, diff, out!)
 end
 
 @i @inline function compute_w_err(out!, w)
-    out! += identity(1.0)
+    out! += 1.0
     out! -= w ^ 2
 end
 
@@ -272,74 +244,8 @@ end
         compute_reproj_err(reproj_err![i], reproj_err_cache![i], cams[obs[1,i]], X[obs[2,i]], w[i], feats[i])
     end
     @inbounds for i=1:length(w_err!)
-        w_err![i] += identity(1.0)
+        w_err![i] += 1.0
         w_err![i] -= w[i] ^ 2
     end
 end
 
-#=
-@i @inline function rodrigues_rotate_point(out!::AbstractVector{T}, rot::AbstractVector{T}, X::AbstractVector{T}, wX::T, sqtheta::T, w_cross_X::AbstractVector{T}, w::AbstractVector{T}) where T
-    idot(sqtheta, rot, rot)
-    @invcheckoff if (sqtheta > 1e-10, ~)
-        @routine begin
-            tmp1 ← zero(T)
-            tmp2 ← zero(T)
-            invtheta ← zero(sqtheta)
-            s ← zero(T)
-            c ← zero(T)
-            theta ← zero(T)
-            theta += sqtheta ^ 0.5
-            (s, c) += sincos(theta)
-            tmp1 += 1 - c
-            invtheta += 1 / theta
-        end
-        iaxpy!(invtheta, rot, w)
-        icross!(w_cross_X, w, X)
-        idot(wX, w, X)
-        iaxpy!(c, X, out!)
-        iaxpy!(s, w_cross_X, out!)
-        tmp2 += wX * tmp1
-        iaxpy!(tmp2, w, out!)
-        tmp2 -= wX * tmp1
-        ~@routine
-    else
-        icross!(w_cross_X, rot, X)
-        out! .+= X .+ w_cross_X
-    end
-end
-
-@i @inline function radial_distort(out!, L::T, rsq::T, rad_params, proj) where T
-    idot(rsq, proj, proj)
-    @routine @invcheckoff begin
-        rsqsq ← zero(T)
-        rsqsq += rsq ^ 2
-    end
-    @inbounds L += rad_params[2] * rsqsq
-    ~@routine
-    @inbounds L += rad_params[1] * rsq
-    L += identity(1)
-    iaxpy!(L, proj, out!)
-end
-
-@i function project(out!, cam::Camera{T}, X) where T
-    @routine @invcheckoff begin
-        Xcam ← zero(cam.r)
-        w_cross_X ← zero(cam.r)
-        w ← zero(cam.r)
-        Xcam2 ← zero(cam.x0)
-        distorted ← zero(cam.x0)
-        rsq ← zero(T)
-        L ← zero(T)
-        wX ← zero(T)
-        sqtheta ← zero(T)
-        X .-= identity.(cam.c)
-        rodrigues_rotate_point(Xcam, cam.r, X, wX, sqtheta, w_cross_X, w)
-        @inbounds Xcam2[1] += Xcam[1] / Xcam[3]
-        @inbounds Xcam2[2] += Xcam[2] / Xcam[3]
-        radial_distort(distorted, L, rsq, cam.κ, Xcam2)
-    end
-    iaxpy!(cam.f, distorted, out!)
-    out! .+= identity.(cam.x0)
-    ~@routine
-end
-=#

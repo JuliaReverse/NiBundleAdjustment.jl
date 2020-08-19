@@ -1,5 +1,5 @@
 using NiBundleAdjustment
-using NiBundleAdjustment: icross!, vec2cam, compute_reproj_err,
+using NiBundleAdjustment: i_cross!, vec2cam, compute_reproj_err,
     project, rand_camera, P2, P3
 using NiLang, NiLang.AD
 using LinearAlgebra, StaticArrays
@@ -16,7 +16,7 @@ end
     x = randn(3)
     y = randn(3)
     c = zeros(3)
-    @instr icross!(c, x, y)
+    @instr i_cross!(c, x, y)
     @test c ≈ cross(x, y)
 end
 
