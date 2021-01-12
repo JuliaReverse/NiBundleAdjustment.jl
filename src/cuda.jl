@@ -1,6 +1,6 @@
-using CuArrays
-using KernelAbstractions
-CuArrays.allowscalar(false)
+using .KernelAbstractions
+using .KernelAbstractions.CUDA
+CUDA.allowscalar(false)
 
 export compute_ba_J_cuda, compute_ba_J_multithread
 
@@ -41,11 +41,11 @@ end
 
 function compute_ba_J_cuda(::Val{:NiLang}, cams::CuArray{<:Camera{T}}, X::CuArray{<:P3}, w::CuArray, obs::CuArray, feats::CuArray{<:P2}; blockdim=256) where T
     p = size(obs,2)
-    reproj_err_d = CuArrays.zeros(T, 2*p, 15)
-    event1 = ba_kernel(CUDA(), blockdim)(reproj_err_d, obs, cams, X, w, feats; ndrange=p)
+    reproj_err_d = CUDA.zeros(T, 2*p, 15)
+    event1 = ba_kernel(CUDADevice(), blockdim)(reproj_err_d, obs, cams, X, w, feats; ndrange=p)
     wait(event1)
-    w_err_d = CuArrays.zeros(T, 1, p)
-    event2 = ba_kernel_w(CUDA(), blockdim)(w_err_d, w; ndrange=p)
+    w_err_d = CUDA.zeros(T, 1, p)
+    event2 = ba_kernel_w(CUDADevice(), blockdim)(w_err_d, w; ndrange=p)
     wait(event2)
     (reproj_err_d, w_err_d)
 end
