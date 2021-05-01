@@ -134,34 +134,34 @@ end
     ~@routine
 end
 
-@i @inline function ⊕(identity)(x::P2, y::P2)
+@i @inline function :(+=)(identity)(x::P2, y::P2)
     x.x += y.x
     x.y += y.y
 end
 
-@i @inline function ⊕(+)(x::P2, y::P2, z::P2)
+@i @inline function :(+=)(+)(x::P2, y::P2, z::P2)
     x.x += y.x + z.x
     x.y += y.y + z.y
 end
 
-@i @inline function ⊕(-)(x::P2, y::P2, z::P2)
+@i @inline function :(+=)(-)(x::P2, y::P2, z::P2)
     x.x += y.x - z.x
     x.y += y.y - z.y
 end
 
-@i @inline function ⊕(identity)(x::P3, y::P3)
+@i @inline function :(+=)(identity)(x::P3, y::P3)
     x.x += y.x
     x.y += y.y
     x.z += y.z
 end
 
-@i @inline function ⊕(+)(x::P3, y::P3, z::P3)
+@i @inline function :(+=)(+)(x::P3, y::P3, z::P3)
     x.x += y.x + z.x
     x.y += y.y + z.y
     x.z += y.z + z.z
 end
 
-@i @inline function ⊕(-)(x::P3, y::P3, z::P3)
+@i @inline function :(+=)(-)(x::P3, y::P3, z::P3)
     x.x += y.x - z.x
     x.y += y.y - z.y
     x.z += y.z - z.z
