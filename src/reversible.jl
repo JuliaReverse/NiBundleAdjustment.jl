@@ -114,8 +114,10 @@ end
         i_axpy!(tmp2, w, out!)
         ~@routine
     else
+        @routine @zeros P3{T} w_cross_X
         i_cross!(w_cross_X, rot, X)
         out! += X + w_cross_X
+        ~@routine
     end
     (~i_norm2)(sqtheta, rot)
     @invcheckoff sqtheta → zero(T)
